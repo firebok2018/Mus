@@ -8,6 +8,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.service.autofill.FieldClassification;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -42,7 +43,17 @@ public class MainActivity extends AppCompatActivity {
 
         }else{
             doStuff();
+            idArraylist();
         }
+
+
+    }
+    public  void idArraylist(){
+        arraylist= new ArrayList<String>();
+        for (int i=0;i<arraylist.size();i++){
+            Toast.makeText(this, "cantidad de musicas  "+i, Toast.LENGTH_SHORT).show();
+        }
+
     }
     public  void doStuff(){
         ListView listView= (ListView) findViewById(R.id.listView);
@@ -51,19 +62,22 @@ public class MainActivity extends AppCompatActivity {
         adapter= new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, arraylist);
         listView.setAdapter(adapter);
 
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (mp.isPlaying()) {
-                    mp.pause();
 
+                Toast.makeText(MainActivity.this, "Seleccionado"+id + position, Toast.LENGTH_SHORT).show();
+                switch (position){
+                    default:
+                        if (!mp.isPlaying()) { //si no suena al play
+                            mp.start();
+                        } else if (mp.isPlaying()) { //si suena la paro
+                            mp.pause();
+                        }
+                        break;
                 }
-                else {
-                    mp.start();
 
-                }
-
-                Toast.makeText(MainActivity.this, "Seleccionado", Toast.LENGTH_SHORT).show();
 
             }
 
@@ -77,17 +91,17 @@ public class MainActivity extends AppCompatActivity {
         if (songCursor != null && songCursor.moveToFirst()){
             int songTitle= songCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
             int songArtista= songCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
-            int songID= songCursor.getColumnIndex(MediaStore.Audio.Media._ID);
+
             do{
                 String currentTitle=songCursor.getString(songTitle);
                 String currentArtista=songCursor.getString(songArtista);
-                String currentID=songCursor.getString(songID);
-                arraylist.add(currentTitle+ "\n"+ currentArtista +songID );
+
+
+
+                arraylist.add(currentTitle+ "\n"+ currentArtista +"\t");
             }while (songCursor.moveToNext());
         }
     }
-
-
 
     @Override
     public   void onRequestPermissionsResult (int requestCode, String[] permissions, int[] grantResults) {
